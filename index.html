@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>静墨轩 · 纯粹静态博客</title>
+    <!-- 使用 marked 库解析 Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #faf9f8;
+            color: #1e1e2a;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e9e7e5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0bcb8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a09c98;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 头部样式 */
+        .site-header {
+            background: #ffffffdd;
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,245,0.92);
+            border-bottom: 1px solid #eae6e0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 1rem 0;
+        }
+        .header-inner {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo a {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #3b3b5c, #2c3e66);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+        .logo a:hover {
+            opacity: 0.85;
+        }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #4a4a5a;
+            transition: color 0.2s;
+            font-size: 1.05rem;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: #2c5f8a;
+            border-bottom: 2px solid #2c5f8a;
+            padding-bottom: 4px;
+        }
+
+        /* 主内容区 */
+        main {
+            min-height: 70vh;
+            padding: 3rem 0 4rem;
+        }
+
+        /* 文章卡片网格 */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .post-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.6rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #eeebe6;
+        }
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+            border-color: #dbd5cd;
+        }
+        .post-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        .post-title a {
+            text-decoration: none;
+            color: #1e2a3e;
+            transition: color 0.2s;
+        }
+        .post-title a:hover {
+            color: #2c5f8a;
+        }
+        .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: #6c6a6a;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed #eee9e3;
+            padding-bottom: 0.6rem;
+        }
+        .post-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background: #f0ede8;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #4f4a44;
+            letter-spacing: 0.3px;
+        }
+        .post-summary {
+            color: #3b3a40;
+            margin: 1rem 0 1.2rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        .read-more {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2c5f8a;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .read-more:hover {
+            text-decoration: underline;
+        }
+
+        /* 标签过滤栏 */
+        .filter-bar {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e2dbd2;
+            padding-bottom: 1rem;
+        }
+        .filter-label {
+            font-weight: 600;
+            color: #3b3b4a;
+            font-size: 0.9rem;
+        }
+        .filter-tag-btn {
+            background: #f1efe7;
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4b4540;
+        }
+        .filter-tag-btn.active {
+            background: #2c5f8a;
+            color: white;
+            box-shadow: 0 2px 6px rgba(44,95,138,0.2);
+        }
+        .filter-tag-btn:hover {
+            background: #dad3ca;
+        }
+
+        /* 文章详情页样式 */
+        .article-container {
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edeae5;
+        }
+        .article-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #1e2936;
+        }
+        .article-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9e2da;
+        }
+        .article-content {
+            font-size: 1.05rem;
+            color: #2c2a2f;
+        }
+        .article-content h1, .article-content h2, .article-content h3 {
+            margin-top: 1.8em;
+            margin-bottom: 0.6em;
+            font-weight: 700;
+        }
+        .article-content p {
+            margin-bottom: 1.2rem;
+        }
+        .article-content code {
+            background: #f4f2ef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9em;
+        }
+        .article-content pre {
+            background: #f2efe9;
+            padding: 1rem;
+            border-radius: 16px;
+            overflow-x: auto;
+            margin: 1.4rem 0;
+        }
+        .article-content blockquote {
+            border-left: 4px solid #2c5f8a;
+            background: #f9f7f4;
+            padding: 0.8rem 1.2rem;
+            margin: 1.2rem 0;
+            font-style: italic;
+            color: #4a4640;
+        }
+        .article-content img {
+            max-width: 100%;
+            border-radius: 16px;
+        }
+        .back-home {
+            display: inline-block;
+            margin-top: 2.5rem;
+            background: none;
+            border: 1px solid #cbc5bc;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: #4a5568;
+            transition: 0.2s;
+        }
+        .back-home:hover {
+            background: #f0ede7;
+            border-color: #9a9389;
+        }
+
+        /* 关于页面样式 */
+        .about-card {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+            border: 1px solid #ece6df;
+        }
+        .about-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 404 */
+        .not-found {
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        /* footer */
+        .site-footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #e9e2da;
+            color: #7c7670;
+            font-size: 0.85rem;
+            background: #fefcf9;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                padding: 0 20px;
+            }
+            .article-title {
+                font-size: 1.8rem;
+            }
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-inner {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-links {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+        <div class="logo">
+            <a href="#/">📖 静墨轩</a>
+        </div>
+        <div class="nav-links">
+            <a href="#/" data-nav="home">首页</a>
+            <a href="#/about" data-nav="about">关于</a>
+        </div>
+    </div>
+</header>
+
+<main id="app-main" class="container">
+    <!-- 动态内容将渲染在此处 -->
+    <div id="dynamic-content">加载中...</div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>© 静墨轩 · 纯粹静态博客 | 用 Markdown 记录思考 · 前端渲染无后端</p>
+    </div>
+</footer>
+
+<script>
+    // ---------- 博客数据 (静态文章) ----------
+    const articlesData = [
+        {
+            id: "1",
+            title: "🌿 开始静态博客之旅",
+            date: "2025-01-15",
+            tags: ["技术", "随笔", "Markdown"],
+            summary: "为什么选择静态博客？轻量、安全、专注于内容。本文分享搭建思路与前端渲染的魅力。",
+            contentMarkdown: `# 开始静态博客之旅
+
+静态博客是一种返璞归真的写作方式。没有数据库，没有复杂的后端，只需要 HTML/CSS/JS 和 Markdown 就能优雅地呈现文字。
+
+## 为什么选择静态博客？
+
+- **速度极快**：无需等待服务器动态生成页面
+- **安全性高**：攻击面小，纯前端文件
+- **版本可控**：所有文章可以用 Git 管理
+- **自由定制**：完全掌握样式与交互
+
+## 技术实现
+
+本博客采用 **前端路由 + Markdown 实时渲染** 的方式。文章数据存储在 JavaScript 数组中，通过 marked 库将 Markdown 转为精美 HTML，支持代码高亮样式，完全离线可用。
+
+> “写作是思考的延伸，而好的工具让思考更流畅。”
+
+你可以自由修改文章数据，添加新的篇章，所有内容都在 \`articlesData\` 中管理。未来甚至可以接入 CMS 或 GitHub 仓库，完全由你掌控。
+
+享受纯粹的创作吧 ✨`
+        },
+        {
+            id: "2",
+            title: "🎨 CSS Grid 布局完全指南",
+            date: "2025-01-22",
+            tags: ["CSS", "前端", "设计"],
+            summary: "现代网页布局的终极方案，Grid 网格系统让复杂界面变得简单易懂。从基础到实战一次掌握。",
+            contentMarkdown: `# CSS Grid 布局完全指南
+
+CSS Grid 是二维布局系统，同时控制行和列，彻底解放复杂界面的构建。本指南带你快速入门。
+
+## 核心概念
+
+- **网格容器**：\`display: grid\`
+- **网格轨道**：\`grid-template-columns\` / \`grid-template-rows\`
+- **网格项目**：通过 \`grid-column\` / \`grid-row\` 放置元素
+
+### 示例代码
+
+\`\`\`css
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.item {
+  background: #f0ede8;
+  padding: 1rem;
+  border-radius: 12px;
+}
+\`\`\`
+
+## 实用技巧
+
+1. **响应式布局**：结合 \`minmax()\` 与 \`auto-fill\`
+2. **区域命名**：\`grid-template-areas\` 让代码可读性飙升
+3. **对齐控制**：\`place-items\` / \`place-content\` 轻松居中
+
+Grid 与 Flexbox 配合使用，几乎可以胜任任何网页布局挑战。动手试试吧！`
+        },
+        {
+            id: "3",
+            title: "⚡ JavaScript 异步编程进阶",
+            date: "2025-02-10",
+            tags: ["JavaScript", "编程", "前端进阶"],
+            summary: "从回调地狱到 async/await，探索异步编程优雅演进之路，掌握现代 JS 并发模型。",
+            contentMarkdown: `# JavaScript 异步编程：从回调到现代模式
+
+异步是 JavaScript 的灵魂。无论是网络请求、定时任务还是事件处理，异步都贯穿始终。
+
+## 异步演化史
+
+### 1. 回调函数 (Callback)
+早期处理异步的方式，但容易陷入“回调地狱”。
+
+\`\`\`javascript
+getData(function(a){
+    getMore(a, function(b){
+        console.log(b);
+    });
+});
+\`\`\`
+
+### 2. Promise 时代
+链式调用，优雅处理错误。
+
+\`\`\`javascript
+fetch('/api/post')
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+\`\`\`
+
+### 3. Async/Await 终极方案
+用同步写法写异步，可读性爆表。
+
+\`\`\`javascript
+async function fetchPosts() {
+  try {
+    const res = await fetch('/api/posts');
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('加载失败', error);
+  }
+}
+\`\`\`
+
+## 最佳实践
+
+- 合理使用 \`Promise.all\` 并发请求
+- 避免遗忘 \`await\` 导致竞态
+- 始终处理错误边界
+
+掌握异步，让 JavaScript 开发更从容。`
+        },
+        {
+            id: "4",
+            title: "📱 响应式设计精要",
+            date: "2025-02-18",
+            tags: ["CSS", "设计", "移动优先"],
+            summary: "一套代码适配所有设备，移动优先理念与弹性布局深度解析。",
+            contentMarkdown: `# 响应式设计核心原则
+
+在多元设备时代，响应式设计不是选择题，而是必答题。
+
+## 三大基石
+
+1. **流体网格**：使用百分比、\`fr\` 单位等相对宽度
+2. **弹性图片**：\`max-width: 100%\` 防止溢出
+3. **媒体查询**：断点定制不同屏幕下的布局
+
+\`\`\`css
+/* 移动优先 */
+.container { padding: 1rem; }
+@media (min-width: 768px) {
+  .container { max-width: 750px; margin: 0 auto; }
+}
+@media (min-width: 1024px) {
+  .container { max-width: 980px; }
+}
+\`\`\`
+
+## 现代方案
+
+- **视口单位**：vw / vh 实现全屏区域
+- **clamp()**：流体字号，自动缩放
+- **容器查询**：基于组件尺寸的响应（未来已来）
+
+构建优雅、包容的网页体验，让每一个访客都舒适阅读。`
+        }
+    ];
+
+    // 辅助函数：提取所有唯一标签（用于过滤栏）
+    function getAllTags() {
+        const tagSet = new Set();
+        articlesData.forEach(article => {
+            article.tags.forEach(tag => tagSet.add(tag));
+        });
+        return Array.from(tagSet).sort();
+    }
+
+    // 工具函数：将 Markdown 转成 HTML (安全)
+    async function renderMarkdown(md) {
+        if (!md) return '';
+        // marked 选项：开启换行、安全模式
+        marked.setOptions({ breaks: true, gfm: true });
+        return marked.parse(md);
+    }
+
+    // 渲染文章列表 (支持标签过滤)
+    async function renderArticleList(activeTag = null) {
+        let filteredArticles = [...articlesData];
+        if (activeTag) {
+            filteredArticles = filteredArticles.filter(article => article.tags.includes(activeTag));
+        }
+
+        const allTags = getAllTags();
+        // 生成标签过滤按钮 HTML
+        let filterHtml = `
+            <div class="filter-bar">
+                <span class="filter-label">🏷️ 筛选标签：</span>
+                <button class="filter-tag-btn ${!activeTag ? 'active' : ''}" data-tag="all">全部</button>
+        `;
+        allTags.forEach(tag => {
+            filterHtml += `<button class="filter-tag-btn ${activeTag === tag ? 'active' : ''}" data-tag="${tag}">${tag}</button>`;
+        });
+        filterHtml += `</div>`;
+
+        if (filteredArticles.length === 0) {
+            filterHtml += `<div style="text-align:center; padding: 3rem;">✨ 没有找到相关标签的文章，试试其他标签吧~</div>`;
+            document.getElementById('dynamic-content').innerHTML = filterHtml;
+            attachFilterEvents();
+            return;
+        }
+
+        let cardsHtml = `<div class="posts-grid">`;
+        for (let article of filteredArticles) {
+            cardsHtml += `
+                <article class="post-card">
+                    <h2 class="post-title"><a href="#/post/${article.id}">${escapeHtml(article.title)}</a></h2>
+                    <div class="post-meta">
+                        <span class="post-date">📅 ${article.date}</span>
+                        <div class="post-tags">
+                            ${article.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+                        </div>
+                    </div>
+                    <p class="post-summary">${escapeHtml(article.summary)}</p>
+                    <a href="#/post/${article.id}" class="read-more">阅读全文 →</a>
+                </article>
+            `;
+        }
+        cardsHtml += `</div>`;
+        const finalHtml = filterHtml + cardsHtml;
+        document.getElementById('dynamic-content').innerHTML = finalHtml;
+        attachFilterEvents();
+    }
+
+    // 绑定过滤按钮事件 (动态生成后)
+    function attachFilterEvents() {
+        const filterBtns = document.querySelectorAll('.filter-tag-btn');
+        filterBtns.forEach(btn => {
+            btn.removeEventListener('click', handleFilterClick);
+            btn.addEventListener('click', handleFilterClick);
+        });
+    }
+
+    let currentFilterTag = null;   // 列表页当前过滤标签，只在列表页有意义
+
+    function handleFilterClick(e) {
+        const tagValue = e.currentTarget.getAttribute('data-tag');
+        if (tagValue === 'all') {
+            currentFilterTag = null;
+        } else {
+            currentFilterTag = tagValue;
+        }
+        // 重新渲染列表并保持当前过滤器
+        renderArticleList(currentFilterTag);
+        // 更新地址栏但不影响路由核心，只做UI状态，hash 仍旧是 #/ ，防止混乱
+        if (window.location.hash !== '#/' && window.location.hash !== '#') {
+            // 如果当前在详情页点了标签？不可能，因为详情页没有过滤栏，所以安全。但在列表页时保持hash不变即可。
+        }
+    }
+
+    // 文章详情渲染
+    async function renderArticleDetail(articleId) {
+        const article = articlesData.find(a => a.id === articleId);
+        if (!article) {
+            document.getElementById('dynamic-content').innerHTML = `<div class="not-found"><h2>📭 文章未找到</h2><p>该文章可能已被移走或链接有误。</p><a href="#/" class="back-home">← 返回首页</a></div>`;
+            return;
+        }
+        // 异步解析 Markdown
+        const contentHtml = await renderMarkdown(article.contentMarkdown);
+        const detailHtml = `
+            <div class="article-container">
+                <h1 class="article-title">${escapeHtml(article.title)}</h1>
+                <div class="article-meta">
+                    <span>📅 ${article.date}</span>
+                    <div class="post-tags">
+                        ${article.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="article-content markdown-body">
+                    ${contentHtml}
+                </div>
+                <a href="#/" class="back-home">🏠 回到首页</a>
+            </div>
+        `;
+        document.getElementById('dynamic-content').innerHTML = detailHtml;
+    }
+
+    // 关于页面
+    async function renderAbout() {
+        const aboutHtml = `
+            <div class="about-card">
+                <h2>📖 关于静墨轩</h2>
+                <p style="font-size:1.1rem; margin: 1rem 0 1.5rem;">一个崇尚简洁与书写的静态博客实验田。</p>
+                <p>本站完全由前端静态技术构建：原生 JavaScript + 自定义路由 + Markdown 实时渲染。无需任何后端依赖，所有文章以数据形式存放，自由扩展。</p>
+                <p>✨ 特性一览：</p>
+                <ul style="margin: 1rem 0 1rem 1.8rem; line-height:1.6;">
+                    <li>📱 响应式布局，手机平板均完美适配</li>
+                    <li>🏷️ 智能标签筛选，快速定位感兴趣内容</li>
+                    <li>📝 Markdown 撰写文章，代码高亮友好</li>
+                    <li>⚡ 前端路由，无刷新切换页面，丝般顺滑</li>
+                    <li>🎨 温和阅读配色，专注文字体验</li>
+                </ul>
+                <p>你可以随时在 <code>articlesData</code> 中添加新文章，修改样式或扩展功能。灵感源于对知识记录的热爱，愿每一份思考都有回响。</p>
+                <div style="margin-top: 2rem;"><a href="#/" class="back-home">← 浏览文章</a></div>
+            </div>
+        `;
+        document.getElementById('dynamic-content').innerHTML = aboutHtml;
+    }
+
+    // 简单防XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // 路由核心 (基于 hash)
+    async function router() {
+        let hash = window.location.hash.slice(1) || '/';   // 去掉#号，默认 '/'
+        // 处理根路径或者空
+        if (hash === '' || hash === '/') {
+            hash = '/';
+        }
+        // 重置当前过滤标签（每次回到首页（列表页）都清空过滤状态，保证列表完整）
+        // 但需要区分如果是从文章内部后退，也要重置过滤状态，合理
+        if (hash === '/') {
+            currentFilterTag = null;
+            await renderArticleList(null);
+            // 高亮导航
+            setActiveNav('home');
+        } 
+        else if (hash.startsWith('/post/')) {
+            const id = hash.split('/post/')[1];
+            if (id) {
+                await renderArticleDetail(id);
+                setActiveNav(null);
+            } else {
+                await renderArticleList(null);
+            }
+        }
+        else if (hash === '/about') {
+            await renderAbout();
+            setActiveNav('about');
+        }
+        else {
+            // 未知路由 -> 显示首页
+            currentFilterTag = null;
+            await renderArticleList(null);
+            setActiveNav('home');
+        }
+        // 滚动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setActiveNav(active) {
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+            if (active === 'home' && (href === '#/' || href === '#')) {
+                link.classList.add('active');
+            } else if (active === 'about' && href === '#/about') {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    // 监听 hash 变化
+    window.addEventListener('hashchange', router);
+    window.addEventListener('DOMContentLoaded', () => {
+        // 如果初始没有hash或者只有#，定向到列表
+        if (!window.location.hash || window.location.hash === '#') {
+            window.location.hash = '#/';
+        } else {
+            router();
+        }
+    });
+</script>
+</body>
+</html>
