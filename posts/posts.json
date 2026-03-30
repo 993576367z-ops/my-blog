@@ -1,25 +1,93 @@
 [
-{
-"id":1,
-"title":"第一篇博客",
-"date":"2026-03-10",
-"summary":"这是博客的第一篇文章。",
-"content":"<p>欢迎来到我的博客。</p><p>这里记录技术和生活。</p>"
-},
-
-{
-"id":2,
-"title":"如何制作静态博客",
-"date":"2026-03-12",
-"summary":"介绍静态博客的基本原理。",
-"content":"<p>静态博客使用HTML、CSS、JavaScript构建。</p>"
-}
-
+  {
+    "id": 1,
+    "title": "第一篇博客",
+    "date": "2026-03-01",
+    "summary": "欢迎来到我的博客世界。",
+    "content": "<p>欢迎来到我的博客，这里将分享技术与生活。</p>"
+  },
+  {
+    "id": 2,
+    "title": "如何制作静态博客",
+    "date": "2026-03-02",
+    "summary": "介绍静态博客原理。",
+    "content": "<p>静态博客通过HTML、CSS和JavaScript构建，无需后端。</p>"
+  },
+  {
+    "id": 3,
+    "title": "前端开发入门",
+    "date": "2026-03-03",
+    "summary": "从零开始学习前端。",
+    "content": "<p>前端开发包括HTML结构、CSS样式和JavaScript交互。</p>"
+  },
+  {
+    "id": 4,
+    "title": "CSS布局技巧",
+    "date": "2026-03-04",
+    "summary": "掌握现代布局方法。",
+    "content": "<p>Flexbox和Grid是现代网页布局的核心技术。</p>"
+  },
+  {
+    "id": 5,
+    "title": "JavaScript基础",
+    "date": "2026-03-05",
+    "summary": "理解JS核心概念。",
+    "content": "<p>JavaScript用于实现网页交互，如点击、动画等。</p>"
+  },
+  {
+    "id": 6,
+    "title": "如何部署网站",
+    "date": "2026-03-06",
+    "summary": "快速上线你的网站。",
+    "content": "<p>可以使用GitHub Pages免费部署静态网站。</p>"
+  },
+  {
+    "id": 7,
+    "title": "响应式设计",
+    "date": "2026-03-07",
+    "summary": "适配手机和电脑。",
+    "content": "<p>通过媒体查询实现不同设备适配。</p>"
+  },
+  {
+    "id": 8,
+    "title": "UI设计基础",
+    "date": "2026-03-08",
+    "summary": "提升界面美感。",
+    "content": "<p>好的UI设计强调对齐、间距和层级。</p>"
+  },
+  {
+    "id": 9,
+    "title": "常用开发工具",
+    "date": "2026-03-09",
+    "summary": "提高开发效率。",
+    "content": "<p>VS Code、Chrome DevTools是常用工具。</p>"
+  },
+  {
+    "id": 10,
+    "title": "API基础知识",
+    "date": "2026-03-10",
+    "summary": "理解前后端通信。",
+    "content": "<p>API用于前端与服务器之间的数据交换。</p>"
+  },
+  {
+    "id": 11,
+    "title": "性能优化技巧",
+    "date": "2026-03-11",
+    "summary": "让网站更快。",
+    "content": "<p>优化图片、减少请求可以提升性能。</p>"
+  },
+  {
+    "id": 12,
+    "title": "SEO基础",
+    "date": "2026-03-12",
+    "summary": "提升搜索排名。",
+    "content": "<p>合理使用关键词和标签有助于SEO。</p>"
+  },
+  {
+    "id": 13,
+    "title": "未来技术趋势",
+    "date": "2026-03-13",
+    "summary": "探索技术发展方向。",
+    "content": "<p>AI、Web3和云计算正在改变世界。</p>"
+  }
 ]
-{
-"id":2,
-"title":"如何制作静态博客",
-"date":"2026-03-12",
-"summary":"介绍静态博客的基本原理。",
-"content":"<p>静态博客使用HTML、CSS、JavaScript构建。</p>"
-
